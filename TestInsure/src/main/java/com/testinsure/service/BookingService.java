@@ -10,6 +10,13 @@ import java.util.List;
 
 @Service
 public class BookingService {
+	
+	/*Methods :
+	 * 1)Create Booking
+	 * 2)Cancel Booking(Includes Refund)
+	 * 3)Get my Bookings(Patient)
+	 * 4)Get all Bookings(Admin)
+	 */
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;

@@ -31,9 +31,6 @@ const Home = () => {
               </div>
               
               <div className="mt-4 d-flex align-items-center gap-3">
-                <div className="d-flex text-warning">
-                  <FaCheckCircle className="me-1" /><FaCheckCircle className="me-1" /><FaCheckCircle className="me-1" /><FaCheckCircle className="me-1" /><FaCheckCircle />
-                </div>
                 <span className="fw-bold text-dark small"></span>
               </div>
             </div>
@@ -162,7 +159,7 @@ const Home = () => {
           </div>
           <hr className="border-secondary" />
           <div className="text-center text-white-50 small">
-            © 2025 TestInsure Hospital System. All rights reserved. Built with Spring Boot & React.
+            © 2025 TestInsure Hospital System. All rights reserved.
           </div>
         </div>
       </footer>

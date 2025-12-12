@@ -1,0 +1,387 @@
+import java.util.*;
+
+// TreeNode class definition
+class TreeNode {
+    int data;
+    TreeNode left;
+    TreeNode right;
+    
+    public TreeNode(int data) {
+        this.data = data;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+// Binary Search Tree implementation
+class BinarySearchTree {
+    private TreeNode root;
+    
+    public BinarySearchTree() {
+        this.root = null;
+    }
+    
+    // Level 1: Basic Tree Operations
+    public void displayTreeStructure() {
+        System.out.println("=== TREE STRUCTURE ===");
+        if (root == null) {
+            System.out.println("Tree is empty");
+            return;
+        }
+        
+        System.out.println("Root: " + root.data);
+        printTree(root, "", true);
+    }
+    
+    private void printTree(TreeNode node, String prefix, boolean isLeft) {
+        if (node != null) {
+            System.out.println(prefix + (isLeft ? "├── " : "└── ") + node.data);
+            
+            // Print children
+            if (node.left != null || node.right != null) {
+                if (node.left != null) {
+                    printTree(node.left, prefix + (isLeft ? "│   " : "    "), true);
+                } else {
+                    System.out.println(prefix + (isLeft ? "│   " : "    ") + "├── null");
+                }
+                
+                if (node.right != null) {
+                    printTree(node.right, prefix + (isLeft ? "│   " : "    "), false);
+                } else {
+                    System.out.println(prefix + (isLeft ? "│   " : "    ") + "└── null");
+                }
+            }
+        }
+    }
+    
+    // Tree Properties and Information
+    public void displayTreeInfo() {
+        System.out.println("\n=== TREE INFORMATION ===");
+        System.out.println("Height of tree: " + getHeight(root));
+        System.out.println("Total nodes: " + countNodes(root));
+        System.out.println("Leaf nodes: " + countLeafNodes(root));
+        System.out.println("Is BST valid? " + isValidBST());
+    }
+    
+    // Level 2: Insert Nodes into Tree
+    public void insert(int data) {
+        root = insertRecursive(root, data);
+        System.out.println("Inserted: " + data);
+    }
+    
+    private TreeNode insertRecursive(TreeNode node, int data) {
+        // If tree is empty, create new node
+        if (node == null) {
+            return new TreeNode(data);
+        }
+        
+        // Otherwise, recur down the tree
+        if (data < node.data) {
+            node.left = insertRecursive(node.left, data);
+        } else if (data > node.data) {
+            node.right = insertRecursive(node.right, data);
+        }
+        // Duplicate values not allowed in this implementation
+        
+        return node;
+    }
+    
+    // Level 3: Delete Nodes from Tree
+    public void delete(int data) {
+        System.out.println("\nAttempting to delete: " + data);
+        root = deleteRecursive(root, data);
+    }
+    
+    private TreeNode deleteRecursive(TreeNode node, int data) {
+        // Base case: tree is empty
+        if (node == null) {
+            System.out.println("Node " + data + " not found for deletion");
+            return null;
+        }
+        
+        // Recur down the tree
+        if (data < node.data) {
+            node.left = deleteRecursive(node.left, data);
+        } else if (data > node.data) {
+            node.right = deleteRecursive(node.right, data);
+        } else {
+            // Node to be deleted found
+            
+            // Case 1: Node with only one child or no child
+            if (node.left == null) {
+                System.out.println("Deleted node " + data + " (case: no left child)");
+                return node.right;
+            } else if (node.right == null) {
+                System.out.println("Deleted node " + data + " (case: no right child)");
+                return node.left;
+            }
+            
+            // Case 2: Node with two children
+            // Get inorder successor (smallest in right subtree)
+            node.data = minValue(node.right);
+            System.out.println("Replaced node " + data + " with inorder successor: " + node.data);
+            
+            // Delete the inorder successor
+            node.right = deleteRecursive(node.right, node.data);
+        }
+        
+        return node;
+    }
+    
+    private int minValue(TreeNode node) {
+        int minValue = node.data;
+        while (node.left != null) {
+            minValue = node.left.data;
+            node = node.left;
+        }
+        return minValue;
+    }
+    
+    // Tree Traversal Methods
+    public void displayTraversals() {
+        System.out.println("\n=== TREE TRAVERSALS ===");
+        System.out.print("Inorder (Sorted): ");
+        inorderTraversal(root);
+        System.out.println();
+        
+        System.out.print("Preorder: ");
+        preorderTraversal(root);
+        System.out.println();
+        
+        System.out.print("Postorder: ");
+        postorderTraversal(root);
+        System.out.println();
+        
+        System.out.print("Level Order: ");
+        levelOrderTraversal();
+        System.out.println();
+    }
+    
+    private void inorderTraversal(TreeNode node) {
+        if (node != null) {
+            inorderTraversal(node.left);
+            System.out.print(node.data + " ");
+            inorderTraversal(node.right);
+        }
+    }
+    
+    private void preorderTraversal(TreeNode node) {
+        if (node != null) {
+            System.out.print(node.data + " ");
+            preorderTraversal(node.left);
+            preorderTraversal(node.right);
+        }
+    }
+    
+    private void postorderTraversal(TreeNode node) {
+        if (node != null) {
+            postorderTraversal(node.left);
+            postorderTraversal(node.right);
+            System.out.print(node.data + " ");
+        }
+    }
+    
+    private void levelOrderTraversal() {
+        if (root == null) return;
+        
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        
+        while (!queue.isEmpty()) {
+            TreeNode current = queue.poll();
+            System.out.print(current.data + " ");
+            
+            if (current.left != null) {
+                queue.add(current.left);
+            }
+            if (current.right != null) {
+                queue.add(current.right);
+            }
+        }
+    }
+    
+    // Tree Utility Methods
+    private int getHeight(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    }
+    
+    private int countNodes(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + countNodes(node.left) + countNodes(node.right);
+    }
+    
+    private int countLeafNodes(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            return 1;
+        }
+        return countLeafNodes(node.left) + countLeafNodes(node.right);
+    }
+    
+    private boolean isValidBST() {
+        return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    
+    private boolean isValidBST(TreeNode node, long min, long max) {
+        if (node == null) {
+            return true;
+        }
+        
+        if (node.data <= min || node.data >= max) {
+            return false;
+        }
+        
+        return isValidBST(node.left, min, node.data) && 
+               isValidBST(node.right, node.data, max);
+    }
+    
+    // Search in Tree
+    public boolean search(int data) {
+        return searchRecursive(root, data);
+    }
+    
+    private boolean searchRecursive(TreeNode node, int data) {
+        if (node == null) {
+            return false;
+        }
+        
+        if (node.data == data) {
+            return true;
+        }
+        
+        if (data < node.data) {
+            return searchRecursive(node.left, data);
+        } else {
+            return searchRecursive(node.right, data);
+        }
+    }
+}
+
+// Main class to demonstrate all tree operations
+public class TreeOperations {
+    public static void main(String[] args) {
+        BinarySearchTree bst = new BinarySearchTree();
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("🌳 BINARY SEARCH TREE OPERATIONS");
+        System.out.println("===============================\n");
+        
+        // Level 1: Basic Tree Demonstration
+        System.out.println("LEVEL 1: BASIC TREE OPERATIONS");
+        System.out.println("-----------------------------");
+        bst.displayTreeStructure();
+        bst.displayTreeInfo();
+        
+        // Level 2: Insert Nodes
+        System.out.println("\nLEVEL 2: INSERTING NODES INTO TREE");
+        System.out.println("----------------------------------");
+        
+        // Insert some nodes
+        int[] nodesToInsert = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+        System.out.println("Inserting nodes: " + Arrays.toString(nodesToInsert));
+        
+        for (int node : nodesToInsert) {
+            bst.insert(node);
+        }
+        
+        // Display tree after insertion
+        bst.displayTreeStructure();
+        bst.displayTreeInfo();
+        bst.displayTraversals();
+        
+        // Level 3: Delete Nodes
+        System.out.println("\nLEVEL 3: DELETE NODES FROM TREE");
+        System.out.println("------------------------------");
+        
+        // Test different deletion cases
+        System.out.println("\n--- Deleting Leaf Node (10) ---");
+        bst.delete(10);
+        bst.displayTreeStructure();
+        bst.displayTraversals();
+        
+        System.out.println("\n--- Deleting Node with One Child (20) ---");
+        bst.delete(20);
+        bst.displayTreeStructure();
+        bst.displayTraversals();
+        
+        System.out.println("\n--- Deleting Node with Two Children (30) ---");
+        bst.delete(30);
+        bst.displayTreeStructure();
+        bst.displayTraversals();
+        
+        System.out.println("\n--- Deleting Root Node (50) ---");
+        bst.delete(50);
+        bst.displayTreeStructure();
+        bst.displayTraversals();
+        
+        // Interactive Menu
+        System.out.println("\n🎮 INTERACTIVE TREE OPERATIONS");
+        System.out.println("=============================");
+        
+        boolean running = true;
+        while (running) {
+            System.out.println("\nChoose an operation:");
+            System.out.println("1. Insert Node");
+            System.out.println("2. Delete Node");
+            System.out.println("3. Search Node");
+            System.out.println("4. Display Tree");
+            System.out.println("5. Display Traversals");
+            System.out.println("6. Display Tree Info");
+            System.out.println("7. Exit");
+            System.out.print("Enter your choice (1-7): ");
+            
+            int choice = scanner.nextInt();
+            
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter value to insert: ");
+                    int insertValue = scanner.nextInt();
+                    bst.insert(insertValue);
+                    break;
+                    
+                case 2:
+                    System.out.print("Enter value to delete: ");
+                    int deleteValue = scanner.nextInt();
+                    bst.delete(deleteValue);
+                    break;
+                    
+                case 3:
+                    System.out.print("Enter value to search: ");
+                    int searchValue = scanner.nextInt();
+                    boolean found = bst.search(searchValue);
+                    System.out.println("Node " + searchValue + " " + (found ? "found" : "not found") + " in tree");
+                    break;
+                    
+                case 4:
+                    bst.displayTreeStructure();
+                    break;
+                    
+                case 5:
+                    bst.displayTraversals();
+                    break;
+                    
+                case 6:
+                    bst.displayTreeInfo();
+                    break;
+                    
+                case 7:
+                    running = false;
+                    System.out.println("Exiting program...");
+                    break;
+                    
+                default:
+                    System.out.println("Invalid choice! Please enter 1-7.");
+            }
+        }
+        
+        scanner.close();
+        System.out.println("\n✨ Tree Operations Program Completed Successfully!");
+    }
+}
