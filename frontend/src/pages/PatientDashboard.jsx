@@ -15,7 +15,8 @@ import {
   FaExclamationCircle,
   FaClock,
   FaCreditCard,
-  FaUserInjured
+  FaUserInjured,
+  FaFlagCheckered
 } from 'react-icons/fa';
 
 const PatientDashboard = () => {
@@ -106,7 +107,7 @@ const PatientDashboard = () => {
       <div className="container" style={{ marginTop: '-1rem' }}>
         <div className="row g-5">
           
-          {/* --- LEFT: INSURANCE WALLET (Vibrant Gradient) --- */}
+          {/* --- LEFT: INSURANCE WALLET --- */}
           <div className="col-lg-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold text-dark mb-0 d-flex align-items-center" style={{letterSpacing: '0.5px'}}>
@@ -173,7 +174,7 @@ const PatientDashboard = () => {
             )}
           </div>
 
-          {/* --- RIGHT: APPOINTMENTS (PALE DYNAMIC TABLE) --- */}
+          {/* --- RIGHT: APPOINTMENTS --- */}
           <div className="col-lg-8">
             <h5 className="fw-bold text-dark mb-3 d-flex align-items-center" style={{letterSpacing: '0.5px'}}>
               <FaCalendarCheck className="me-2 text-primary"/> RECENT APPOINTMENTS
@@ -210,13 +211,16 @@ const PatientDashboard = () => {
                           } else if (b.status === 'CANCELLED') {
                             statusBadgeClass = "bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25"; 
                             icon = <FaTimesCircle className="me-1"/>;
+                          } else if (b.status === 'COMPLETED') { // NEW STATUS STYLE
+                            statusBadgeClass = "bg-info bg-opacity-10 text-info border border-info border-opacity-25"; 
+                            icon = <FaFlagCheckered className="me-1"/>;
                           }
 
                           return (
                             <tr key={b.bookingId} style={{ height: '75px' }}>
                               <td className="ps-4">
                                 <div className="d-flex align-items-center">
-                                  {/* PALE INDIGO DATE BOX */}
+                                  {/* DATE BOX */}
                                   <div className="rounded-3 p-2 text-center me-3 border" 
                                        style={{ width: '55px', backgroundColor: '#eef2ff', borderColor: '#c7d2fe', color: '#3730a3' }}>
                                     <div className="fw-bold">{b.timeSlot.date.split('-')[2]}</div>
@@ -233,12 +237,11 @@ const PatientDashboard = () => {
                                 <span className="small text-muted">Diagnostic Test</span>
                               </td>
                               <td>
-                                {/* PALE PASTEL BADGE */}
+                                {/* STATUS BADGE */}
                                 <span className={`badge rounded-pill px-3 py-2 fw-bold ${statusBadgeClass}`}>
                                   {icon} {b.status}
                                 </span>
                                 
-                                {/* Status Note */}
                                 {b.status === 'CANCELLED' && b.paymentStatus === 'PENDING' ? (
                                   <div className="text-danger small mt-1 fw-bold" style={{fontSize: '0.75rem'}}><FaExclamationCircle className="me-1"/>Rejected</div>
                                 ) : (
@@ -247,26 +250,29 @@ const PatientDashboard = () => {
                               </td>
                               <td className="text-end pe-4">
                                 <div className="d-flex justify-content-end gap-2">
-                                  {/* RECEIPT BUTTON WITH TEXT */}
+                                  
+                                  {/* RECEIPT (Always show unless cancelled) */}
                                   {b.status !== 'CANCELLED' && (
                                     <button onClick={() => downloadBill(b.bookingId)} className="btn btn-white border shadow-sm btn-sm rounded-2 text-dark fw-bold" title="Receipt">
                                       <FaFileInvoiceDollar className="me-1"/> Receipt
                                     </button>
                                   )}
                                   
-                                  {/* RESULT BUTTON WITH TEXT (RESTORED) */}
-                                  {b.paymentStatus === 'PAID' && (
+                                  {/* RESULT BUTTON (Show if Completed or Paid) */}
+                                  {(b.status === 'COMPLETED' || b.paymentStatus === 'PAID') && (
                                     <button onClick={() => downloadReport(b.bookingId)} className="btn btn-success shadow-sm btn-sm rounded-2 fw-bold" title="Result">
                                       <FaFileMedical className="me-1"/> Result
                                     </button>
                                   )}
                                   
-                                  {/* CANCEL BUTTON */}
-                                  {b.status === 'CONFIRMED' && (
+                                  {/* CANCEL BUTTON (Visible ONLY if Confirmed AND Payment is NOT PAID) */}
+                                  {/* This logic ensures Insurance Bookings (which are PAID immediately) cannot be cancelled */}
+                                  {b.status === 'CONFIRMED' && b.paymentStatus !== 'PAID' && (
                                     <button onClick={() => handleCancel(b.bookingId)} className="btn btn-outline-danger btn-sm border-0 rounded-circle" title="Cancel" style={{width: '32px', height: '32px'}}>
                                       <FaTimesCircle />
                                     </button>
                                   )}
+
                                 </div>
                               </td>
                             </tr>
