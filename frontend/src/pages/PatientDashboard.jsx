@@ -71,7 +71,7 @@ const PatientDashboard = () => {
       }
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
-    } catch (error) { toast.info("Report pending upload."); }
+    } catch (error) { toast.info("Report yet to be uploaded."); }
   };
 
   return (
