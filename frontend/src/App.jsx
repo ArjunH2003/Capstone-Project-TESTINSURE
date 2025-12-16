@@ -1,6 +1,10 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'; // Removed BrowserRouter/Router
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// --- 1. IMPORT THEME PROVIDER ONLY ---
+// (AuthProvider is already in main.jsx, so we don't need it here)
+import { ThemeProvider } from './context/ThemeContext';
 
 // Import Pages
 import Home from './pages/Home';
@@ -23,17 +27,20 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <>
+    // --- 2. WRAP ONLY THEME PROVIDER ---
+    <ThemeProvider> 
+      
       {/* Global Popup Notification Container */}
       <ToastContainer position="top-right" autoClose={3000} />
       
+      {/* Note: No <Router> here because it is in main.jsx */}
       <Routes>
-        {/* --- PUBLIC ROUTES (Open to everyone) --- */}
+        {/* --- PUBLIC ROUTES --- */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* --- ADMIN ROUTES (Protected: Only 'ADMIN' role allowed) --- */}
+        {/* --- ADMIN ROUTES (Protected) --- */}
         <Route path="/admin-dashboard" element={
           <ProtectedRoute allowedRole="ADMIN"> <AdminDashboard /> </ProtectedRoute>
         } />
@@ -50,7 +57,7 @@ function App() {
           <ProtectedRoute allowedRole="ADMIN"> <AdminReports /> </ProtectedRoute>
         } />
 
-        {/* --- PATIENT ROUTES (Protected: Only 'PATIENT' role allowed) --- */}
+        {/* --- PATIENT ROUTES (Protected) --- */}
         <Route path="/patient-dashboard" element={
           <ProtectedRoute allowedRole="PATIENT"> <PatientDashboard /> </ProtectedRoute>
         } />
@@ -58,8 +65,9 @@ function App() {
           <ProtectedRoute allowedRole="PATIENT"> <BookTest /> </ProtectedRoute>
         } />
       </Routes>
-    </>
-  )
+
+    </ThemeProvider>
+  );
 }
 
 export default App;
